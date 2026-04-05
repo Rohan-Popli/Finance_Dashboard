@@ -1,0 +1,5 @@
+/* App-specific styles can go here if needed. 
+   Most styles are handled via Tailwind in index.css */
+.active-nav-link {
+  @apply text-accent font-bold;
+}
