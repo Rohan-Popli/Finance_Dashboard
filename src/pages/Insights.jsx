@@ -173,19 +173,21 @@ const SENTIMENT = {
 };
 
 const InsightRow = ({ type, message, delay }) => {
-  const { Icon, border, bg, text, ring } = SENTIMENT[type] ?? SENTIMENT.info;
+  const styleMap = {
+    warn: `text-amber-600 dark:text-amber-400 bg-amber-50/40 dark:bg-amber-500/5`,
+    good: `text-emerald-600 dark:text-emerald-400 bg-emerald-50/40 dark:bg-emerald-500/5`,
+    idea: `text-indigo-600 dark:text-indigo-400 bg-indigo-50/40 dark:bg-indigo-500/5`,
+    info: `text-blue-600 dark:text-blue-400 bg-blue-50/40 dark:bg-blue-500/5`,
+  };
+
+  const style = styleMap[type] || styleMap.info;
+
   return (
-    <motion.div {...fadeUp(delay)}>
-      <div
-        className="flex items-start gap-3 p-4 rounded-xl border 
-                    border-gray-200 bg-white 
-                    dark:bg-ft-surface dark:border-white/10"
-      >
-        <div className="flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500">
-          <Icon size={17} />
-        </div>
-        <p className="text-sm text-gray-700 dark:text-ft-muted leading-relaxed">{message}</p>
-      </div>
+    <motion.div
+      {...fadeUp(delay)}
+      className={`rounded-xl px-4 py-3 text-sm transition-all duration-200 ${style}`}
+    >
+      {message}
     </motion.div>
   );
 };
