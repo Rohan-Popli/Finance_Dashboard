@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useFinanceStore from '../store/useFinanceStore';
 
@@ -11,6 +11,8 @@ const CATEGORIES = [
 const FORM_CATEGORIES = CATEGORIES.filter((c) => c !== 'All');
 
 const DATE_RANGES = ['All', 'Jan 2025', 'Feb 2025', 'Mar 2025'];
+
+const ROWS_PER_PAGE = 10;
 
 const formatDate = (dateStr) =>
   new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
@@ -40,6 +42,48 @@ const Transactions = () => {
     [transactions_raw, filters, sortConfig] // eslint-disable-line react-hooks/exhaustive-deps
   );
   const isAdmin = role === 'admin';
+
+  // ── Debounced search ──
+  // Keep a local input value so keystrokes feel instant.
+  // Only push to the Zustand store (which triggers filtering) after 350 ms of inactivity.
+  const [searchInput, setSearchInput] = useState(filters.search);
+  const debounceTimer = useRef(null);
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      setFilters({ search: value });
+    }, 350);
+  };
+
+  // Keep local input in sync if the store search is reset externally.
+  useEffect(() => {
+    setSearchInput(filters.search);
+  }, [filters.search]);
+
+  // ── Pagination ──
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset to page 1 whenever the filtered result set changes.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [transactions.length, filters, sortConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const totalPages = Math.max(1, Math.ceil(transactions.length / ROWS_PER_PAGE));
+
+  const paginatedTransactions = useMemo(() => {
+    const start = (currentPage - 1) * ROWS_PER_PAGE;
+    return transactions.slice(start, start + ROWS_PER_PAGE);
+  }, [transactions, currentPage]);
+
+  // Scroll table into view when page changes.
+  const tableRef = useRef(null);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    tableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // ── Sort helpers ──
   const handleSort = (key) => {
@@ -109,8 +153,8 @@ const Transactions = () => {
             id="txn-search"
             type="text"
             placeholder="Search transactions..."
-            value={filters.search}
-            onChange={(e) => setFilters({ search: e.target.value })}
+            value={searchInput}
+            onChange={handleSearchChange}
             className="flex-1 min-w-[180px] bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder-ft-muted rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
           />
           <select
@@ -146,7 +190,7 @@ const Transactions = () => {
         </div>
 
         {/* ── Table ── */}
-        <div className="bg-white dark:bg-ft-card rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div ref={tableRef} className="bg-white dark:bg-ft-card rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <table className="w-full text-left">
             <thead className="bg-gray-50 dark:bg-white/5">
               <tr>
@@ -175,7 +219,7 @@ const Transactions = () => {
                   </td>
                 </tr>
               ) : (
-                transactions.map((t) => (
+                paginatedTransactions.map((t) => (
                   <tr key={t.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{formatDate(t.date)}</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{t.description}</td>
@@ -208,8 +252,49 @@ const Transactions = () => {
               )}
             </tbody>
           </table>
-          <div className="px-6 py-3 border-t border-gray-100 dark:border-gray-700/50 text-xs text-gray-500 dark:text-gray-400">
-            Showing {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
+          <div className="px-6 py-3 border-t border-gray-100 dark:border-gray-700/50 flex items-center justify-between flex-wrap gap-3">
+            {/* Row count */}
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Showing {Math.min((currentPage - 1) * ROWS_PER_PAGE + 1, transactions.length)}–{Math.min(currentPage * ROWS_PER_PAGE, transactions.length)} of {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
+            </span>
+
+            {/* Pagination controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center gap-1">
+                {/* Previous */}
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  ← Prev
+                </button>
+
+                {/* Page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`w-7 h-7 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                      page === currentPage
+                        ? 'bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500/30'
+                        : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                {/* Next */}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
