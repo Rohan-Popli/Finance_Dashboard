@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import useFinanceStore from './store/useFinanceStore'
 import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
   }, [darkMode]);
   return(
     <Router>
+      <Toaster position='top-right'/>
       <AppRoutes/>
     </Router>
   );
