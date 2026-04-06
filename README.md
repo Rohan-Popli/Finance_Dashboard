@@ -1,16 +1,160 @@
-# React + Vite
+# 💰 FinTrack — Finance Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, full-featured finance dashboard built with **React, Zustand, and Tailwind CSS**.
+It helps users track income, expenses, and financial insights with a clean SaaS-style UI.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Live Demo
 
-## React Compiler
+👉 https://finance-dashboard-chi-bice.vercel.app
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 📊 Dashboard
+
+- Summary cards for **Balance, Income, Expenses, Savings Rate**
+- Animated count-up numbers
+- Monthly cash flow visualization
+- Spending breakdown (charts)
+- Top spending categories
+
+---
+
+### 💳 Transactions
+
+- Add, Edit, Delete transactions (CRUD)
+- Search with **debounce optimization**
+- Advanced filtering (category, type, date)
+- Sorting (date, amount, category)
+- Pagination (10 rows per page)
+- CSV export of filtered data
+
+---
+
+### 🧠 Insights
+
+- AI-style smart insights generated from transaction data
+- Clean, minimal styling with contextual color indicators
+
+---
+
+### ⚡ UX Enhancements
+
+- Toast notifications for actions (add/edit/delete)
+- Skeleton loaders for realistic loading states
+- Smooth page transitions (Framer Motion)
+- Fully responsive design
+
+---
+
+### 🌗 Theme Support
+
+- Dark mode (default)
+- Light mode toggle with persistent preference
+
+---
+
+## 🔐 Role-Based Access Control (RBAC)
+
+The application supports two roles:
+
+### 👑 Admin
+
+- Can **add, edit, and delete** transactions
+- Full access to all features
+
+### 👁 Viewer
+
+- Read-only access
+- Cannot modify transactions
+- UI adapts dynamically based on role
+
+> Role switching is handled via Zustand state and updates UI in real-time.
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+
+- React 18 (Vite)
+- Tailwind CSS v3
+- Framer Motion (animations)
+- Recharts (data visualization)
+- React Router DOM v6
+
+---
+
+### State Management
+
+- Zustand (with persist middleware)
+
+---
+
+### Utilities
+
+- date-fns (date formatting)
+- react-hot-toast (notifications)
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/Rohan-Popli/finance-dashboard.git
+cd finance-dashboard
+```
+
+---
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 3️⃣ Run the development server
+
+```bash
+npm run dev
+```
+
+---
+
+### 4️⃣ Open in browser
+
+```text
+http://localhost:5173
+```
+
+---
+
+## 💾 Data Persistence
+
+- Uses **Zustand persist middleware**
+- Data is stored in **localStorage**
+- Transactions remain available after page refresh
+
+---
+
+## 📈 Future Improvements
+
+- Backend integration (Node.js + MongoDB)
+- Authentication (JWT)
+- Budget tracking system
+- Export reports (PDF)
+
+---
+
+## 💼 Author
+
+**Rohan Popli**
+
+---
