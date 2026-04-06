@@ -1,7 +1,7 @@
-# 💰 FinTrack — Finance Dashboard
+# 💰 FinanceDash — Finance Dashboard
 
-A modern, full-featured finance dashboard built with **React, Zustand, and Tailwind CSS**.
-It helps users track income, expenses, and financial insights with a clean SaaS-style UI.
+A modern, full-featured finance dashboard built using **React, Zustand, and Tailwind CSS**.
+Designed to simulate a real-world financial tracking system with performance optimizations and a clean SaaS-style UI.
 
 ---
 
@@ -11,79 +11,110 @@ It helps users track income, expenses, and financial insights with a clean SaaS-
 
 ---
 
-## ✨ Features
+# 📌 Overview
 
-### 📊 Dashboard
+FinanceDash is a frontend-focused financial management dashboard that allows users to:
 
-- Summary cards for **Balance, Income, Expenses, Savings Rate**
-- Animated count-up numbers
-- Monthly cash flow visualization
-- Spending breakdown (charts)
-- Top spending categories
+- Track income and expenses
+- Analyze financial trends through charts
+- Gain insights into spending behavior
+- Interact with a responsive and optimized UI
+
+The project emphasizes **performance, scalability, and user experience**, making it suitable for real-world applications.
 
 ---
 
-### 💳 Transactions
+# 🧠 Approach
+
+The application is designed with a **modular and scalable architecture**:
+
+- **State Management** handled using Zustand with persistence
+- **Component-based structure** for reusability and maintainability
+- **Performance optimizations** like debounced search and memoization
+- **Separation of concerns** between UI, logic, and state
+- **Responsive-first design** using Tailwind CSS
+
+Special focus was given to:
+
+- Clean UI without overdesign
+- Real-time reactivity
+- Minimal but effective animations
+
+---
+
+# ✨ Features
+
+## 📊 Dashboard
+
+- Financial summary (Balance, Income, Expenses, Savings Rate)
+- Animated count-up statistics
+- Monthly cash flow visualization (Recharts)
+- Spending breakdown chart
+- Top spending categories with percentage distribution
+
+---
+
+## 💳 Transactions
 
 - Add, Edit, Delete transactions (CRUD)
-- Search with **debounce optimization**
-- Advanced filtering (category, type, date)
-- Sorting (date, amount, category)
+- Debounced search (optimized performance)
+- Filters (category, type, date)
+- Sorting (amount, date, category)
 - Pagination (10 rows per page)
 - CSV export of filtered data
 
 ---
 
-### 🧠 Insights
+## 🧠 Insights
 
-- AI-style smart insights generated from transaction data
-- Clean, minimal styling with contextual color indicators
+- Automatically generated financial insights
+- Contextual color-based highlighting (warning, good, idea, info)
+- Clean and minimal UI for readability
 
 ---
 
-### ⚡ UX Enhancements
+## ⚡ UX Enhancements
 
-- Toast notifications for actions (add/edit/delete)
+- Toast notifications for user actions
 - Skeleton loaders for realistic loading states
-- Smooth page transitions (Framer Motion)
-- Fully responsive design
+- Smooth page transitions using Framer Motion
+- Responsive layout across devices
 
 ---
 
-### 🌗 Theme Support
+## 🌗 Theme Support
 
 - Dark mode (default)
-- Light mode toggle with persistent preference
+- Light mode toggle with persistence
 
 ---
 
-## 🔐 Role-Based Access Control (RBAC)
+# 🔐 Role-Based Access Control (RBAC)
 
-The application supports two roles:
+The system supports two roles:
 
 ### 👑 Admin
 
-- Can **add, edit, and delete** transactions
 - Full access to all features
+- Can add, edit, and delete transactions
 
 ### 👁 Viewer
 
 - Read-only access
-- Cannot modify transactions
-- UI adapts dynamically based on role
+- Cannot modify any data
 
-> Role switching is handled via Zustand state and updates UI in real-time.
+Role switching updates UI dynamically using global state.
 
 ---
 
-## 🛠 Tech Stack
+# 🛠 Tech Stack
 
 ### Frontend
 
 - React 18 (Vite)
 - Tailwind CSS v3
 - Framer Motion (animations)
-- Recharts (data visualization)
+- Recharts (charts & data visualization)
 - React Router DOM v6
 
 ---
@@ -101,13 +132,13 @@ The application supports two roles:
 
 ---
 
-## ⚙️ Setup Instructions
+# ⚙️ Setup Instructions
 
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/Rohan-Popli/finance-dashboard.git
-cd finance-dashboard
+git clone https://github.com/Rohan-Popli/Finance_Dashboard.git
+cd Finance_Dashboard
 ```
 
 ---
@@ -130,30 +161,32 @@ npm run dev
 
 ### 4️⃣ Open in browser
 
-```text
+```
 http://localhost:5173
 ```
 
 ---
 
-## 💾 Data Persistence
+# 💾 Data Persistence
 
-- Uses **Zustand persist middleware**
-- Data is stored in **localStorage**
+- Application state is persisted using Zustand middleware
+- Data is stored in browser localStorage
 - Transactions remain available after page refresh
 
 ---
 
-## 📈 Future Improvements
+# 📈 Future Scope
 
 - Backend integration (Node.js + MongoDB)
-- Authentication (JWT)
-- Budget tracking system
-- Export reports (PDF)
+- User authentication (JWT)
+- Budget tracking & alerts
+- Export reports (PDF/Excel)
+- Multi-user support
+- Cloud data sync
 
 ---
 
-## 💼 Author
+# 💼 Author
 
 **Rohan Popli**
 
