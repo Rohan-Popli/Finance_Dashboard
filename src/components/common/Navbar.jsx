@@ -172,7 +172,7 @@ const Navbar = ({ toggleSidebar }) => {
             onClick={(e) => {
               e.stopPropagation();
               setShowNotifications(!showNotifications)}}
-            className="relative p-2.5 text-ft-muted hover:text-gray-900 dark:hover:text-white transition-all duration-200 hover:bg-gray-100 dark:hover:bg-white/8 rounded-xl group"
+            className="relative p-2.5 text-ft-muted hover:text-gray-900 dark:hover:text-white transition-all duration-200 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl group"
           >
             <Bell size={19} />
 
@@ -188,13 +188,14 @@ const Navbar = ({ toggleSidebar }) => {
             dark:bg-[#1e2340] dark:text-gray-200 dark:border-white/10 
             backdrop-blur-md z-50">
 
-              <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-center py-3">
                 <p className="text-lg mb-1">🔔</p>
-                <p>No new notifications</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  You're all caught up!
+                </p>
               </div>
-
             </div>
-            )}
+          )}
         </div>
 
         {/* User Profile */}
