@@ -26,8 +26,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const navLinkClass = ({ isActive }) =>
     `flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 group relative ${
       isActive
-        ? 'bg-indigo-500/15 text-gray-900 dark:text-white shadow-[inset_0_0_20px_rgba(99,102,241,0.1)] border border-ft-primary/30'
-        : 'text-ft-muted hover:bg-gray-100 dark:hover:bg-white/8 hover:text-gray-900 dark:hover:text-white border border-transparent'
+        ? "bg-indigo-500/10 text-indigo-500"
+        : "text-ft-muted hover:bg-gray-100 dark:hover:bg-white/5"
     }`;
 
   return (
@@ -74,9 +74,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <NavLink key={item.name} to={item.path} className={navLinkClass}>
                 {({ isActive }) => (
                   <>
-                    {isActive && (
+                    {/* {isActive && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-ft-primary rounded-r-full shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
-                    )}
+                    )} */}
                     <span className={`transition-all duration-200 ${isActive ? 'text-ft-primary' : 'group-hover:scale-110 group-hover:text-gray-900 dark:group-hover:text-white'}`}>
                       {item.icon}
                     </span>
