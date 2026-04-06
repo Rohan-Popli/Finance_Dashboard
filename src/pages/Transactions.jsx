@@ -23,6 +23,12 @@ const today = new Date().toISOString().split('T')[0];
 const emptyForm = { description: '', amount: '', category: 'Food', type: 'expense', date: today };
 
 const Transactions = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
   // ── Store ──
   const filters           = useFinanceStore((s) => s.filters);
   const setFilters        = useFinanceStore((s) => s.setFilters);
@@ -260,7 +266,29 @@ const Transactions = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
-              {transactions.length === 0 ? (
+              {loading ? (
+                [...Array(6)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-20 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-32 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-24 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="h-4 w-16 ml-auto bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                    </td>
+                    {isAdmin && (
+                      <td className="px-6 py-4 text-center">
+                        <div className="h-4 w-20 mx-auto bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : transactions.length === 0 ? (
                 <tr>
                   <td colSpan={isAdmin ? 5 : 4} className="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400 italic">
                     No transactions match your filters.
@@ -279,14 +307,12 @@ const Transactions = () => {
                       <td className="px-6 py-4 text-sm text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button
-                            id={`edit-txn-${t.id}`}
                             className="text-xs px-3 py-1 rounded-lg bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/30 transition-all duration-200 font-medium"
                             onClick={() => openEditModal(t)}
                           >
                             Edit
                           </button>
                           <button
-                            id={`delete-txn-${t.id}`}
                             className="text-xs px-3 py-1 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/30 transition-all duration-200 font-medium"
                             onClick={() => deleteTransaction(t.id)}
                           >
