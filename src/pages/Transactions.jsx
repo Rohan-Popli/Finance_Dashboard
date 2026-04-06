@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useFinanceStore from '../store/useFinanceStore';
+import toast from 'react-hot-toast';
 
 const CATEGORIES = [
   'All', 'Salary', 'Rent', 'Food', 'Entertainment',
@@ -154,10 +155,14 @@ const Transactions = () => {
 
     if (editingId) {
       updateTransaction(editingId, payload);
-    } else {
+      toast.success("Transaction Updated");
+    } else{
       addTransaction(payload);
+      toast.success("Transaction Added Successfully");
     }
-    closeModal();
+    setTimeout(() => {
+      closeModal();
+    }, 300)
   };
 
   return (
@@ -314,7 +319,9 @@ const Transactions = () => {
                           </button>
                           <button
                             className="text-xs px-3 py-1 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/30 transition-all duration-200 font-medium"
-                            onClick={() => deleteTransaction(t.id)}
+                            onClick={() => {deleteTransaction(t.id);
+                              toast.error("Transaction Deleted");
+                            }}
                           >
                             Delete
                           </button>
