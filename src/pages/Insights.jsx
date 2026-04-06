@@ -177,9 +177,11 @@ const InsightRow = ({ type, message, delay }) => {
   return (
     <motion.div {...fadeUp(delay)}>
       <div
-        className={`flex items-start gap-4 p-4 rounded-xl border-l-4 ${border} ${bg} ring-1 ${ring} bg-gray-100 dark:bg-[rgba(17,20,32,0.6)]`}
+        className="flex items-start gap-3 p-4 rounded-xl border 
+                    border-gray-200 bg-white 
+                    dark:bg-ft-surface dark:border-white/10"
       >
-        <div className={`flex-shrink-0 mt-0.5 ${text}`}>
+        <div className="flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500">
           <Icon size={17} />
         </div>
         <p className="text-sm text-gray-700 dark:text-ft-muted leading-relaxed">{message}</p>
