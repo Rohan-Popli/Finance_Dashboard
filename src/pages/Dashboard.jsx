@@ -1,9 +1,32 @@
-import React, { useMemo } from 'react';
+import React, { useMemo , useEffect , useState} from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import useFinanceStore from '../store/useFinanceStore';
 import CashFlowChart from '../components/dashboard/CashFlowChart';
 import SpendingDonut from '../components/dashboard/SpendingDonut';
+
+const useCountUp = (end, duration = 800) => {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const increment = end / (duration / 16);
+
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setValue(end);
+        clearInterval(timer);
+      } else {
+        setValue(start);
+      }
+    }, 16);
+
+    return () => clearInterval(timer);
+  }, [end, duration]);
+
+  return value;
+};
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },
@@ -14,15 +37,24 @@ const fadeUp = (delay = 0) => ({
 const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const Dashboard = () => {
+  
   // Subscribe to transactions so the component re-renders when data changes.
   const transactions = useFinanceStore((s) => s.transactions);
   const getSummary   = useFinanceStore((s) => s.getSummary);
+ 
   // Recompute only when transactions change, not on every render.
   const { totalBalance, monthlyIncome, monthlyExpenses } = useMemo(
     () => getSummary(),
     [transactions] // eslint-disable-line react-hooks/exhaustive-deps
   );
+  const savingsRate = monthlyIncome > 0
+    ? ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100
+    : 0;
 
+  const animatedBalance = useCountUp(totalBalance);
+  const animatedIncome = useCountUp(monthlyIncome);
+  const animatedExpenses = useCountUp(monthlyExpenses);
+  const animatedSavings = useCountUp(savingsRate);
   const topCategories = useMemo(() => {
     const expenseMap = {};
 
@@ -44,6 +76,12 @@ const Dashboard = () => {
       percent: total ? (amount / total) * 100 : 0,
     }));
   }, [transactions]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -60,8 +98,16 @@ const Dashboard = () => {
           + Add Expense
         </motion.button>
       </motion.div>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 rounded-2xl bg-gray-200 dark:bg-white/10 animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <>
       
-      <motion.div {...fadeUp(0.12)} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <motion.div {...fadeUp(0.12)} className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Total Balance Card */}
         <motion.div
           whileHover={{ y: -5, boxShadow: '0 0 0 1px rgba(99,102,241,0.25), 0 24px 48px rgba(99,102,241,0.22)' }}
@@ -78,7 +124,7 @@ const Dashboard = () => {
                 <Wallet size={17} />
               </div>
             </div>
-            <h2 className="text-[2rem] font-bold tracking-tight text-white leading-none">${fmt(totalBalance)}</h2>
+            <h2 className="text-[2rem] font-bold tracking-tight text-white leading-none">${fmt(animatedBalance)}</h2>
             <p className="text-xs text-indigo-400/70 mt-2.5 font-medium">{totalBalance >= 0 ? '↑' : '↓'} Net balance across all transactions</p>
           </div>
         </motion.div>
@@ -99,7 +145,7 @@ const Dashboard = () => {
                 <TrendingUp size={17} />
               </div>
             </div>
-            <h2 className="text-[2rem] font-bold tracking-tight text-emerald-300 leading-none">+${fmt(monthlyIncome)}</h2>
+            <h2 className="text-[2rem] font-bold tracking-tight text-emerald-300 leading-none">+${fmt(animatedIncome)}</h2>
             <p className="text-xs text-emerald-400/60 mt-2.5 font-medium">↑ Total income across all periods</p>
           </div>
         </motion.div>
@@ -120,8 +166,42 @@ const Dashboard = () => {
                 <TrendingDown size={17} />
               </div>
             </div>
-            <h2 className="text-[2rem] font-bold tracking-tight text-red-300 leading-none">-${fmt(monthlyExpenses)}</h2>
+            <h2 className="text-[2rem] font-bold tracking-tight text-red-300 leading-none">-${fmt(animatedExpenses)}</h2>
             <p className="text-xs text-red-400/60 mt-2.5 font-medium">↑ Total expenses across all periods</p>
+          </div>
+        </motion.div>
+        {/* Savings Rate Card */}
+        <motion.div
+          whileHover={{ y: -5, boxShadow: '0 0 0 1px rgba(251,191,36,0.25), 0 24px 48px rgba(251,191,36,0.18)' }}
+          transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+          className="relative overflow-hidden bg-gradient-to-br from-[#2a2412] via-[#1c180c] to-[#111520] p-6 rounded-2xl border border-amber-400/20 cursor-default group"
+          style={{ boxShadow: '0 4px 24px rgba(251,191,36,0.08), inset 0 1px 0 rgba(255,255,255,0.05)' }}
+        >
+          {/* Top shimmer */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/8 to-transparent pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-ft-muted">
+                Savings Rate
+              </p>
+              <div className="w-9 h-9 bg-amber-400/15 rounded-xl flex items-center justify-center text-amber-300 ring-1 ring-amber-400/20">
+                %
+              </div>
+            </div>
+
+            <h2 className="text-[2rem] font-bold tracking-tight text-amber-300 leading-none">
+              {animatedSavings.toFixed(1)}%
+            </h2>
+
+            <p className="text-xs text-amber-400/60 mt-2.5 font-medium">
+              {savingsRate >= 20
+                ? "↑ Healthy savings rate"
+                : savingsRate >= 10
+                ? "→ Moderate savings"
+                : "↓ Low savings — review spending"}
+            </p>
           </div>
         </motion.div>
       </motion.div>
@@ -144,7 +224,12 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-4">
-          {topCategories.map((item) => (
+          {topCategories.length === 0 ? (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No expense data available
+            </p>
+          ) : (
+            topCategories.map((item) => (
             <div key={item.category}>
               {/* Row */}
               <div className="flex justify-between items-center mb-1">
@@ -164,10 +249,13 @@ const Dashboard = () => {
                 />
               </div>
             </div>
-          ))}
+          )))}
         </div>
       </motion.div>
+      </>
+    )}
     </div>
+
   );
 };
 
