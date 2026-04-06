@@ -4,8 +4,8 @@ import useFinanceStore from '../../store/useFinanceStore';
 
 // ── Role config ───────────────────────────────────────────────────
 const ROLES = {
-  admin:  { label: 'Admin',  Icon: Shield, badge: 'bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/30' },
-  viewer: { label: 'Viewer', Icon: Eye,    badge: 'bg-gray-200 dark:bg-white/8 text-gray-500 dark:text-gray-400 ring-1 ring-gray-300 dark:ring-white/15' },
+  admin:  { label: 'Admin',  Icon: Shield, badge: 'bg-indigo-100 text-indigo-700 ring-1 ring-indigo-300 backdrop-blur-sm dark:bg-indigo-500/20 dark:text-indigo-300 dark:ring-indigo-500/30' },
+  viewer: { label: 'Viewer', Icon: Eye,    badge: 'bg-gray-100 text-gray-800 ring-1 ring-gray-300 backdrop-blur-sm dark:bg-white/5 dark:text-gray-300 dark:ring-white/10' },
 };
 
 // ── Dark Mode Toggle ──────────────────────────────────────────────
@@ -42,6 +42,7 @@ const RoleSwitcher = ({ role, onSetRole }) => {
   }, []);
 
   const current = ROLES[role] ?? ROLES.admin;
+
 
   return (
     <div ref={ref} className="relative">
@@ -108,6 +109,24 @@ const Navbar = ({ toggleSidebar }) => {
   const toggleDarkMode = useFinanceStore((s) => s.toggleDarkMode);
   const role          = useFinanceStore((s) => s.role);
   const setRole       = useFinanceStore((s) => s.setRole);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationRef = useRef(null);
+  useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(e.target)
+    ) {
+      setShowNotifications(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
 
   return (
     <header className="h-16 border-b border-gray-200 dark:border-white/5 bg-white/80 dark:bg-[#090e1c]/80 backdrop-blur-xl flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30 shadow-[0_1px_0_rgba(0,0,0,0.04)] dark:shadow-[0_1px_0_rgba(255,255,255,0.04)]">
@@ -121,7 +140,7 @@ const Navbar = ({ toggleSidebar }) => {
         </button>
 
         {/* Search Bar */}
-        <div className="relative group max-w-md w-full">
+        {/* <div className="relative group max-w-md w-full">
           <Search
             className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ft-muted group-focus-within:text-ft-primary transition-colors duration-200"
             size={16}
@@ -131,7 +150,7 @@ const Navbar = ({ toggleSidebar }) => {
             placeholder="Search transactions..."
             className="w-full bg-gray-100 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder:text-ft-muted focus:outline-none focus:ring-2 focus:ring-ft-primary/40 focus:border-ft-primary/60 focus:bg-gray-200 dark:focus:bg-white/8 transition-all duration-200"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Right — controls + profile */}
@@ -147,10 +166,36 @@ const Navbar = ({ toggleSidebar }) => {
         <div className="hidden lg:block w-px h-6 bg-gray-200 dark:bg-white/10" />
 
         {/* Notifications */}
-        <button className="relative p-2.5 text-ft-muted hover:text-gray-900 dark:hover:text-white transition-all duration-200 hover:bg-gray-100 dark:hover:bg-white/8 rounded-xl group">
-          <Bell size={19} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-ft-primary rounded-full shadow-[0_0_6px_rgba(99,102,241,0.9)] animate-pulse" />
-        </button>
+        <div ref = {notificationRef}className="relative">
+          {/* 🔔 Button */}
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowNotifications(!showNotifications)}}
+            className="relative p-2.5 text-ft-muted hover:text-gray-900 dark:hover:text-white transition-all duration-200 hover:bg-gray-100 dark:hover:bg-white/8 rounded-xl group"
+          >
+            <Bell size={19} />
+
+            {!showNotifications && (
+              <span className="absolute top-2 right-2 w-2 h-2 bg-ft-primary rounded-full shadow-[0_0_6px_rgba(99,102,241,0.9)] animate-pulse" />
+            )}
+          </button>
+
+          {/* 🔔 Popup */}
+          {showNotifications && (
+            <div className="absolute right-0 mt-2 w-64 rounded-xl shadow-lg 
+            bg-white text-gray-800 border border-gray-200 
+            dark:bg-[#1e2340] dark:text-gray-200 dark:border-white/10 
+            backdrop-blur-md z-50">
+
+              <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-lg mb-1">🔔</p>
+                <p>No new notifications</p>
+              </div>
+
+            </div>
+            )}
+        </div>
 
         {/* User Profile */}
         <button className="flex items-center gap-3 py-1.5 px-2 lg:px-3 group hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200 dark:hover:border-white/10">
