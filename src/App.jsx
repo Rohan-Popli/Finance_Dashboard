@@ -6,6 +6,8 @@ import Transactions from './pages/Transactions';
 import Insights from './pages/Insights';
 import { useEffect } from 'react'
 import useFinanceStore from './store/useFinanceStore'
+import { AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
 import './App.css';
 
 function App() {
@@ -19,20 +21,30 @@ function App() {
     } else {
       root.classList.remove('dark')
     }
-  }, [darkMode])
+  }, [darkMode]);
+  return(
+    <Router>
+      <AppRoutes/>
+    </Router>
+  );
+}
+
+
+function AppRoutes(){
+  const location = useLocation();
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="transactions" element={<Transactions />} />
-          <Route path="insights" element={<Insights />} />
-          <Route path="*" element={<div className="p-20 text-center font-bold">Page Not Found</div>} />
-        </Route>
-      </Routes>
-    </Router>
-  )
+      <AnimatePresence mode = "wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="transactions" element={<Transactions />} />
+            <Route path="insights" element={<Insights />} />
+            <Route path="*" element={<div className="p-20 text-center font-bold">Page Not Found</div>} />
+          </Route>
+        </Routes>
+      </AnimatePresence>
+  );
 }
 
 export default App;
