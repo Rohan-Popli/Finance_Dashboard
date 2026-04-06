@@ -23,6 +23,28 @@ const Dashboard = () => {
     [transactions] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
+  const topCategories = useMemo(() => {
+    const expenseMap = {};
+
+    transactions.forEach((t) => {
+      if (t.type === 'expense') {
+        expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
+      }
+    });
+
+    const sorted = Object.entries(expenseMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    const total = sorted.reduce((sum, [, val]) => sum + val, 0);
+
+    return sorted.map(([category, amount]) => ({
+      category,
+      amount,
+      percent: total ? (amount / total) * 100 : 0,
+    }));
+  }, [transactions]);
+
   return (
     <div className="space-y-6">
       <motion.div {...fadeUp(0)} className="flex justify-between items-center">
@@ -107,6 +129,43 @@ const Dashboard = () => {
       <motion.div {...fadeUp(0.26)} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CashFlowChart />
         <SpendingDonut />
+      </motion.div>
+      <motion.div
+        {...fadeUp(0.36)}
+        className="bg-white dark:bg-ft-card rounded-2xl p-6 border border-gray-200 dark:border-gray-700"
+      >
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Top Spending Categories
+          </h2>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Top 5 expenses
+          </span>
+        </div>
+
+        <div className="space-y-4">
+          {topCategories.map((item) => (
+            <div key={item.category}>
+              {/* Row */}
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {item.category}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  ${fmt(item.amount)} • {item.percent.toFixed(0)}%
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-indigo-500 rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${item.percent}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </motion.div>
     </div>
   );
