@@ -55,7 +55,7 @@ const Transactions = () => {
     clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       setFilters({ search: value });
-    }, 350);
+    }, 750);
   };
 
   // Keep local input in sync if the store search is reset externally.
@@ -93,6 +93,36 @@ const Transactions = () => {
   const sortIcon = (key) => {
     if (sortConfig.key !== key) return ' ↕';
     return sortConfig.direction === 'asc' ? ' ↑' : ' ↓';
+  };
+  // ── CSV Export ──
+  const exportToCSV = () => {
+    if (!transactions.length) return;
+
+    const headers = ["Date", "Description", "Category", "Amount", "Type"];
+
+    const rows = transactions.map(t => [
+      t.date,
+      t.description,
+      t.category,
+      t.amount,
+      t.type
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows]
+        .map(row => row.join(","))
+        .join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "transactions.csv");
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
   };
 
   // ── Modal state ──
@@ -135,16 +165,34 @@ const Transactions = () => {
       >
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Recent Transactions</h1>
-          {isAdmin && (
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Recent Transactions
+          </h1>
+
+          <div className="flex items-center gap-3">
+            {/* CSV Export Button */}
             <button
-              id="add-transaction-btn"
-              onClick={openAddModal}
-              className="bg-gradient-to-r from-indigo-600 to-ft-primary text-white px-5 py-2.5 rounded-xl shadow-lg shadow-ft-primary/30 hover:shadow-ft-primary/50 transition-all duration-300 font-semibold text-sm"
+              onClick={exportToCSV}
+              className="px-4 py-2 text-sm font-semibold rounded-xl 
+              bg-white/80 dark:bg-white/5 
+              border border-gray-200 dark:border-white/10 
+              text-gray-700 dark:text-gray-300 
+              hover:bg-gray-100 dark:hover:bg-white/10 
+              transition-all duration-200 backdrop-blur-md"
             >
-              + Add Transaction
+              Export CSV
             </button>
-          )}
+
+            {isAdmin && (
+              <button
+                id="add-transaction-btn"
+                onClick={openAddModal}
+                className="bg-gradient-to-r from-indigo-600 to-ft-primary text-white px-5 py-2.5 rounded-xl shadow-lg shadow-ft-primary/30 hover:shadow-ft-primary/50 transition-all duration-300 font-semibold text-sm"
+              >
+                + Add Transaction
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ── Filter Bar ── */}
